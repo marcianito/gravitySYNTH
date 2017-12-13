@@ -23,6 +23,12 @@ getStationParam = function(
     parameter = station_parameters %>%
        dplyr::filter(Name == Site) %>%
        dplyr::select_(Param)
+    # determine and output correct type (NOT data.frame !!)
+    if(is.numeric(parameter[1,1])){
+        parameter = as.numeric(parameter)
+    }else{
+        parameter = as.character(parameter)
+    }
     # return value
     return(parameter)
 }
