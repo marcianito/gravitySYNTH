@@ -19,6 +19,12 @@ precip_from_esrl = function(
     lat,
     plotting = T
 ){
+    ## DEBUGGING
+    # input_dir = dir_input
+    # filenames = file_name
+    # lon = getStationParam(Site = site, Param = "Longitude")
+    # lat = getStationParam(Site = site, Param = "Latitude")
+    # i = 1
     # run loop over all input files
     # and stich output
     precip_data_siteXY = data.frame()
