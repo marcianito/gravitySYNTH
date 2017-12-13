@@ -16,6 +16,7 @@ pick_ts = function(
     site_name,
     variation,
     includeET = FALSE,
+    gravityUnits = TRUE,
     ...
 ){
     ########
@@ -37,13 +38,13 @@ pick_ts = function(
     # change column name
     colnames(atmosphere_daily)[2] = "atmo"
     ####################
-    # discharge
-    load(file = paste0(input_dir, "Discharge/", site_name, "_discharge_daily.rData"))
-    # convert from mm to gravity
-    # using topography factor
-    discharge_daily = discharge_daily %>%
-        dplyr::mutate(discharge = value * facTopo) %>%
-        dplyr::select(datetime, discharge)
+    # # discharge
+    # load(file = paste0(input_dir, "Discharge/", site_name, "_discharge_daily.rData"))
+    # # convert from mm to gravity
+    # # using topography factor
+    # discharge_daily = discharge_daily %>%
+    #     dplyr::mutate(discharge = value * facTopo) %>%
+    #     dplyr::select(datetime, discharge)
     ####################
     # global hydrology
     globHyd_daily = read_data(
@@ -91,7 +92,7 @@ pick_ts = function(
         ## combine time series
         gravity_ts = ET_daily %>%
             dplyr::inner_join(atmosphere_daily) %>%
-            dplyr::inner_join(discharge_daily) %>%
+            # dplyr::inner_join(discharge_daily) %>%
             dplyr::inner_join(globHyd_daily) %>%
             dplyr::inner_join(ntol_daily) %>%
             dplyr::inner_join(precip_daily) %>%
@@ -103,15 +104,21 @@ pick_ts = function(
     }else{ # no
         ## combine time series
         gravity_ts = atmosphere_daily %>%
-            dplyr::inner_join(discharge_daily) %>%
+            # dplyr::inner_join(discharge_daily) %>%
             dplyr::inner_join(globHyd_daily) %>%
             dplyr::inner_join(ntol_daily) %>%
             dplyr::inner_join(precip_daily) %>%
             dplyr::inner_join(tides_daily) %>%
             # make sure there is no NA value !!
             # convert to 0
-            dplyr::mutate(value = atmo + discharge + globHyd + ntol + precip + tides) %>%
+            # dplyr::mutate(value = atmo + discharge + globHyd + ntol + precip + tides) %>%
+            dplyr::mutate(value = atmo + globHyd + ntol + precip + tides) %>%
             dplyr::select(datetime, value)
+    }
+    ## select units of time series
+    # if desired, [nm/s²] are converted in [mm], using the topography factor
+    if(!gravityUnits){
+      gravity_ts$value = gravity_ts$value / facTopo
     }
     ## return time series
     return(gravity_ts)
