@@ -15,6 +15,8 @@ pick_ts = function(
     input_dir,
     site_name,
     variation,
+    timePeriod_start,
+    timePeriod_end,
     includeET = FALSE,
     gravityUnits = TRUE,
     ...
@@ -36,14 +38,20 @@ pick_ts = function(
         dat_tsf = (variation$atmo + 6))
     # change column name
     colnames(atmosphere_hourly)[2] = "atmo"
+    # limit time period to decided period
+    atmosphere_hourly = atmosphere_hourly %>%
+        dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end)
     ####################
     # # discharge
-    # load(file = paste0(input_dir, "Discharge/", site_name, "_discharge_daily.rData"))
+    # load(file = paste0(input_dir, "Discharge/", site_name, "_discharge_hourly.rData"))
     # # convert from mm to gravity
     # # using topography factor
-    # discharge_daily = discharge_daily %>%
+    # discharge_hourly = discharge_hourly %>%
     #     dplyr::mutate(discharge = value * facTopo) %>%
     #     dplyr::select(datetime, discharge)
+    # # limit time period to decided period
+    # discharge_hourly = discharge_hourly %>%
+        # dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end)
     ####################
     # global hydrology
     globHyd_hourly = read_data(
@@ -52,6 +60,9 @@ pick_ts = function(
         dat_tsf = (variation$globHyd + 6))
     # change column name
     colnames(globHyd_hourly)[2] = "globHyd"
+    # limit time period to decided period
+    globHyd_hourly = globHyd_hourly %>%
+        dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end)
     ####################
     # non tidal ocean loading
     ntol_hourly = read_data(
@@ -60,6 +71,9 @@ pick_ts = function(
         dat_tsf = (variation$ntol + 6))
     # change column name
     colnames(ntol_hourly)[2] = "ntol"
+    # limit time period to decided period
+    ntol_hourly = ntol_hourly %>%
+        dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end)
     ####################
     # precipitation: precip_hourly
     load(file = paste0(input_dir, "Precipitation/", site_name, "_precipitation_hourly.rData"))
@@ -68,6 +82,9 @@ pick_ts = function(
     precip_hourly = precip_hourly %>%
         dplyr::mutate(precip = value * facTopo) %>%
         dplyr::select(datetime, precip)
+    # limit time period to decided period
+    precip_hourly = precip_hourly %>%
+        dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end)
     ####################
     # tides
     tides_hourly = read_data(
@@ -76,6 +93,9 @@ pick_ts = function(
         dat_tsf = (variation$tides + 6))
     # change column name
     colnames(tides_hourly)[2] = "tides"
+    # limit time period to decided period
+    tides_hourly = tides_hourly %>%
+        dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end)
     ####################
      
     ####################
@@ -90,6 +110,7 @@ pick_ts = function(
         # using topography factor
         ET_hourly = ET_hourly %>%
             dplyr::mutate(ET = -1 * value * facTopo) %>%
+            dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end) %>%
             dplyr::select(datetime, ET)
         ## combine time series
         gravity_ts = ET_hourly %>%
