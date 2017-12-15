@@ -89,7 +89,7 @@ pick_ts = function(
         # convert from mm to gravity
         # using topography factor
         ET_hourly = ET_hourly %>%
-            dplyr::mutate(ET = value * facTopo) %>%
+            dplyr::mutate(ET = -1 * value * facTopo) %>%
             dplyr::select(datetime, ET)
         ## combine time series
         gravity_ts = ET_hourly %>%
