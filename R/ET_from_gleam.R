@@ -17,6 +17,7 @@ ET_from_gleam = function(
     filenames,
     lon,
     lat,
+    output_cumsum = F,
     plotting = T
 ){
     # DEBUGGING: inspect file
@@ -74,6 +75,16 @@ ET_from_gleam = function(
                 )
     # combine datasets over different files
     ET_data_siteXY = rbind(ET_data_siteXY, ET_data_siteXY_temp)
+    }
+    ## output either as actual value or
+    # cumulative sum
+    if(output_cumsum){
+        # check if NAs exist and set them to 0 (no precipitation)
+        # otherwise there is a problem with the cumsum-function
+        ET_data_siteXY = ET_data_siteXY %>%
+            dplyr::mutate(value = ifelse(is.na(value), 0, value))
+        # calculate cummulative sum
+        ET_data_siteXY$value = cumsum(ET_data_siteXY$value)
     }
     # plot if desired
     if(plotting){
