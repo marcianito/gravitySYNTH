@@ -19,6 +19,7 @@ pick_ts = function(
     timePeriod_end,
     includeET = FALSE,
     gravityUnits = TRUE,
+    facTopo,
     ...
 ){
     ########
@@ -28,7 +29,7 @@ pick_ts = function(
     # variation = site_component_combinations[1,]
     #######
     ## load site parameters
-    facTopo = getStationParam(site_name, "facTopo")
+    # facTopo = getStationParam(site_name, "facTopo")
     ## load time series
     ####################
     # atmosphere
