@@ -14,13 +14,13 @@
 getStationParam = function(
     Site,
     Param,
-    input_dir = dir_input
+    input_dir = "./"
 ){
     # check out if station_parameters is loaded
-    if(!exists("station_parameters")){
-    load(file = paste0(input_dir, "Station_parameters.rData"))
+    if(!exists("config_file")){
+    load(file = paste0(input_dir, "config_file.RData"))
     }
-    parameter = station_parameters %>%
+    parameter = config_file %>%
        dplyr::filter(Name == Site) %>%
        dplyr::select_(Param)
     # determine and output correct type (NOT data.frame !!)
