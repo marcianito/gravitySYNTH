@@ -27,6 +27,11 @@ pick_ts = function(
     # input_dir = dir_input
     # site_name = site
     # variation = site_component_combinations[1,]
+    # facTopo = TopoFactor
+    # timePeriod_start = ts_start
+    # timePeriod_end = ts_end
+    # includeET = FALSE
+    # gravityUnits = TRUE
     #######
     ## load site parameters
     # facTopo = getStationParam(site_name, "facTopo")
@@ -42,17 +47,6 @@ pick_ts = function(
     # limit time period to decided period
     atmosphere_hourly = atmosphere_hourly %>%
         dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end)
-    ####################
-    # # discharge
-    # load(file = paste0(input_dir, "Discharge/", site_name, "_discharge_hourly.rData"))
-    # # convert from mm to gravity
-    # # using topography factor
-    # discharge_hourly = discharge_hourly %>%
-    #     dplyr::mutate(discharge = value * facTopo) %>%
-    #     dplyr::select(datetime, discharge)
-    # # limit time period to decided period
-    # discharge_hourly = discharge_hourly %>%
-        # dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end)
     ####################
     # global hydrology
     globHyd_hourly = read_data(
@@ -74,17 +68,6 @@ pick_ts = function(
     colnames(ntol_hourly)[2] = "ntol"
     # limit time period to decided period
     ntol_hourly = ntol_hourly %>%
-        dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end)
-    ####################
-    # precipitation: precip_hourly
-    load(file = paste0(input_dir, "Precipitation/", site_name, "_precipitation_hourly.rData"))
-    # convert from mm to gravity
-    # using topography factor
-    precip_hourly = precip_hourly %>%
-        dplyr::mutate(precip = value * facTopo) %>%
-        dplyr::select(datetime, precip)
-    # limit time period to decided period
-    precip_hourly = precip_hourly %>%
         dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end)
     ####################
     # tides
@@ -116,28 +99,24 @@ pick_ts = function(
         ## combine time series
         gravity_ts = ET_hourly %>%
             dplyr::inner_join(atmosphere_hourly) %>%
-            # dplyr::inner_join(discharge_daily) %>%
             dplyr::inner_join(globHyd_hourly) %>%
             dplyr::inner_join(ntol_hourly) %>%
-            dplyr::inner_join(precip_hourly) %>%
             dplyr::inner_join(tides_hourly) %>%
             # make sure there is no NA value !!
             # convert to 0
             # dplyr::mutate(value = ET + atmo + discharge + globHyd + ntol + precip + tides) %>%
-            dplyr::mutate(value = ET + atmo + globHyd + ntol + precip + tides) %>%
+            dplyr::mutate(value = ET + atmo + globHyd + ntol + tides) %>%
             dplyr::select(datetime, value)
     }else{ # no
         ## combine time series
         gravity_ts = atmosphere_hourly %>%
-            # dplyr::inner_join(discharge_daily) %>%
             dplyr::inner_join(globHyd_hourly) %>%
             dplyr::inner_join(ntol_hourly) %>%
-            dplyr::inner_join(precip_hourly) %>%
             dplyr::inner_join(tides_hourly) %>%
             # make sure there is no NA value !!
             # convert to 0
             # dplyr::mutate(value = atmo + discharge + globHyd + ntol + precip + tides) %>%
-            dplyr::mutate(value = atmo + globHyd + ntol + precip + tides) %>%
+            dplyr::mutate(value = atmo + globHyd + ntol + tides) %>%
             dplyr::select(datetime, value)
     }
     ## select units of time series
