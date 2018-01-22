@@ -20,15 +20,16 @@ getStationParam = function(
     if(!exists("config_file")){
     load(file = paste0(input_dir, "config_file.RData"))
     }
+    if(Site == "all"){
+    parameter = config_file %>%
+       dplyr::select_(Param)
+    }else{
     parameter = config_file %>%
        dplyr::filter(Name == Site) %>%
        dplyr::select_(Param)
-    # determine and output correct type (NOT data.frame !!)
-    if(is.numeric(parameter[1,1])){
-        parameter = as.numeric(parameter)
-    }else{
-        parameter = as.character(parameter)
     }
+    # # determine and output correct type (NOT data.frame !!)
+    parameter = as.vector(parameter[,1])
     # return value
     return(parameter)
 }
