@@ -14,14 +14,15 @@
 getFluxNet_ET = function(
     site_name,
     input_dir,
+    output_cumsum,
     plotting = F,
     show_LE = F,
     ...
 ){
     ## DEBUGGING
     # site_name = "test"
-    # site_name = "SU"
-    # input_dir = dir_input
+    site_name = "CA"
+    input_dir = dir_input
     ##
     FluxNet_station = getStationParam(Site = site_name, Param = "FluxNet")
     file_name_path = paste0(input_dir, "Evapotranspiration/",
@@ -56,6 +57,16 @@ getFluxNet_ET = function(
         dplyr::group_by(datetime) %>%
         dplyr::summarize(value = sum(value, na.rm = T))
 
+    # output either as actual value or
+    # cumulative sum
+    if(output_cumsum){
+        # check if NAs exist and set them to 0 (no precipitation)
+        # otherwise there is a problem with the cumsum-function
+        ET_timeseriesMax_site = ET_timeseriesMax_site %>%
+            dplyr::mutate(value = ifelse(is.na(value), 0, value))
+        # calculate cummulative sum
+        ET_timeseriesMax_site$value = cumsum(ET_timeseriesMax_site$value)
+    }
     # plot for check
     if(plotting){
         if(show_LE){
