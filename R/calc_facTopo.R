@@ -7,7 +7,10 @@
 #' @param grid3d_depth c(-10, 0) # min, max
 #' @param dir_input directory of DEM file
 #' 
-#' @return test
+#' @return Returns the topographic conversion factor which represents
+#' the gravity effect resulting from 1 mm of vertical water storage change.
+#' This factor is used to convert mm of water from precipitation or evapotranspiration
+#' measurements, etc. to gravity units [nm/s²].
 #' 
 #' @details missing
 #' @references Marvin Reich (2018), mreich@@posteo.de
@@ -20,20 +23,30 @@ calc_facTopo = function(
     grid3d_discr,
     grid3d_depth,
     topo_flat = F,
+    pillar_correction = T,
     dir_input_DEM,
     DEM_fileType = "ascii"
 
 ){
     ############
     ## DEBUGGING
-    # site_name = site
-    # grid_extent = grid_ext
-    # grid3d_discr = grid3d_discrezitation
-    # grid3d_depth = grid3d_vertDepth
+    # site_name = "SU"
+    # grid_extent = c(getStationParam(site, "TopoFactor_gridExtent_x"), getStationParam(site, "TopoFactor_gridExtent_y"))
+    # grid3d_discr = data.frame(x = getStationParam(site, "TopoFactor_gridDiscretization_x"),
+    #                                  y = getStationParam(site, "TopoFactor_gridDiscretization_y"),
+    #                                  z = getStationParam(site, "TopoFactor_gridDiscretization_z"))
+    # grid3d_depth = c(getStationParam(site, "TopoFactor_gridExtent_z"), 0)
     # topo_flat = F
-    # dir_input_DEM = dir_DEM
+    # dir_input_DEM = paste0(dir_input, "DEM/")
     # DEM_fileType = "ascii"
-
+    # # test for bougher
+    # grid_extent = c(50000,50000)
+    # grid3d_discr = data.frame(x = 1000,
+    #                           y = 1000,
+    #                           z = 1)
+    # grid3d_depth = c(-3, 0)
+    # topo_flat = T
+    # 
     ############
     ## Gravimeter location
     # necessarily in UTM coordinate system
@@ -47,11 +60,10 @@ calc_facTopo = function(
     # units: [m]
     # same height as in "our setups"
     SG_SensorHeight = 1.05
-    # test
-    # SG_x = 310090.43 
-    # SG_y = 5645529.4 
-    # SG_Z = 93.17
-    # SG_SensorHeight = 1.05 
+    # SG pillar specifications
+    # units [m]
+    thres_radius = 0.5
+    thres_depth = 1.2
     ## Model domain
     # extent in [m]
     grid_ext_x = grid_extent[1]
@@ -112,23 +124,26 @@ calc_facTopo = function(
                 grid_edges = "regular"
     )
     # # plot to check
-    # ggplot(data = dplyr::filter(melt(gravity_component_grid3d, id = c("x", "y", "z", "Depth", "layer")), layer == 10), aes(x=x, y=y)) + 
+    # layer_num = 1
+    # ggplot(data = dplyr::filter(melt(gravity_component_grid3d, id = c("x", "y", "z", "Depth", "layer")), layer == layer_num), aes(x=x, y=y)) + 
     #   geom_raster(aes(fill = value))
     # 
-    # ## Correct gravity component grid for SG pillar 
-    # gravity_component_grid3d = correct_SGpillar(
-    #             gravity_comp3d = gravity_component_grid3d,
-    #             correct_radius = thres_radius,
-    #             correct_depth = thres_depth,
-    #             SG_X = SG_x,
-    #             SG_Y = SG_y
-    # )
+    ## Correct gravity component grid for SG pillar 
+    if(pillar_correction){
+        gravity_component_grid3d = correct_SGpillar(
+                    gravity_comp3d = gravity_component_grid3d,
+                    correct_radius = thres_radius,
+                    correct_depth = thres_depth,
+                    SG_X = SG_x,
+                    SG_Y = SG_y
+        )
+    }
     # 
     # plot to check
     #  plot_gcomp_grid(
     #     grid_input = gravity_component_grid3d,
     #     yloc = SG_y,
-    #     output_dir = dir_output,
+    #     output_dir = "~/temp/",
     #     grid_discretization = grid3d_discr
     # )
     # 
@@ -141,8 +156,10 @@ calc_facTopo = function(
         # sum horizontally
         dplyr::summarize(gcomp_z = sum(gcomp, na.rm = T)) %>%
         # average vertically
-        # AND get 1%, not 100% value
-        dplyr::summarize(0.01 * mean(gcomp_z, na.rm = T))
+        # 100% value (filled gravity cubes)
+        # convert [m] to [mm] to get units:
+        # 1 mm change of water causes HOW MUCH gravity change in [nm / s²]
+        dplyr::summarize(0.001 * mean(gcomp_z, na.rm = T))
     # convert to correct data type (NOT data.frame !)
     TopoFactor = as.numeric(TopoFactor)
     

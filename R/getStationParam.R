@@ -16,10 +16,14 @@ getStationParam = function(
     Param,
     input_dir = "./"
 ){
-    # check out if station_parameters is loaded
-    if(!exists("config_file")){
-    load(file = paste0(input_dir, "config_file.RData"))
-    }
+    # # check out if station_parameters is loaded
+    # if(!exists("config_file")){
+    # load(file = paste0(input_dir, "config_file.RData"))
+    # }
+    # load .csv file
+    config_file = read.table(file=paste0(input_dir, "config_file.csv"),
+        sep = ";", dec = ",", header = T, stringsAsFactors = F, nrows = 7)
+    # choose parameters
     if(Site == "all"){
     parameter = config_file %>%
        dplyr::select_(Param)
