@@ -25,12 +25,17 @@ create_gravityGrid = function(
 ){
     ## DEBUGGING
     # DEM_input_file = DEM_file
+    # DEM_input_file = DEM_in
     # dir_input_DEM = dir_DEM
-    # SG_coordinates = SGloc
-    # grid_discretization = grid3d_discrezitation
+    # # SG_coordinates = SGloc
+    # SG_coordinates = SG_locs
+    # # grid_discretization = grid3d_discrezitation
+    # grid_discretization = grid3d_discretization[1,]
     # grid_depth = grid3d_vertDepth
-    # radius_inner = rad_inner
-    # radius_outer = rad_outer
+    # # radius_inner = rad_inner
+    # # radius_outer = rad_outer
+    # radius_inner = 0
+    # radius_outer = 100
     ##
     if(is.na(radius_inner)){
         # rectangle
@@ -43,34 +48,49 @@ create_gravityGrid = function(
         grid_x = c(SG_coordinates$x - (radius_outer), SG_coordinates$x + (radius_outer)) # min, max
         grid_y = c(SG_coordinates$y - (radius_outer), SG_coordinates$y + (radius_outer)) # min, max
     }
-    # Generate cropped DEM and surface grid
-    grid_surface = surface_grid(
+    # # Generate cropped DEM and surface grid
+    # message("creating adjusted surface grid")
+    # grid_surface = surface_grid(
+    #             DEM = DEM_input_file,
+    #             grid_domain_x = grid_x,
+    #             grid_domain_y = grid_y,
+    #             grid_discretization = grid_discretization,
+    #             input_dir = dir_input_DEM,
+    #             output_dir = dir_input_DEM
+    #             # , sep = "a", etc.
+    # )
+    # # ggplot(data = melt(grid_surface, id = c("x", "y")), aes(x=x, y=y)) + 
+    # #   geom_raster(aes(fill = value))
+    # # generate 3d grid
+    # message("surface to 3d grid")
+    # grid3d = surface_to_grid3d(
+    #         surface_grid = grid_surface,
+    #         grid_discr = grid_discretization,
+    #         depth_split = grid_depth,
+    #         Bd_x = grid_x,
+    #         Bd_y = grid_y 
+    # )
+    # generate 3d grid
+    message("DEM to 3d grid")
+    grid3d = DEM_to_grid3d(
                 DEM = DEM_input_file,
                 grid_domain_x = grid_x,
                 grid_domain_y = grid_y,
-                grid_discretization = grid_discretization,
+                grid_discr = grid_discretization,
+                depth_split = grid_depth,
                 input_dir = dir_input_DEM,
                 output_dir = dir_input_DEM
-                # , sep = "a", etc.
-    )
-    ggplot(data = melt(grid_surface, id = c("x", "y")), aes(x=x, y=y)) + 
-      geom_raster(aes(fill = value))
-    # generate 3d grid
-    grid3d = surface_to_grid3d(
-            surface_grid = grid_surface,
-            grid_discr = grid_discretization,
-            depth_split = grid_depth,
-            Bd_x = grid_x,
-            Bd_y = grid_y 
     )
 
     # plot to check
-    ggplot(data = melt(grid3d, id = c("x", "y")), aes(x=x, y=y)) + 
-      geom_raster(aes(fill = value))
+    # ggplot(data = melt(grid3d, id = c("x", "y")), aes(x=x, y=y)) + 
+    #   geom_raster(aes(fill = value))
 
     # define geometry of grid and apply provided limits
     if(!is.na(radius_inner)){
+        message("limiting data to OUTER radius..")
         grid_limitOuterRadius = remove_outsideRadius(grid3d, SG_coordinates, radius_outer)
+        message("limiting data to INNER radius..")
         grid3d = remove_insideRadius(grid_limitOuterRadius, SG_coordinates, radius_inner)
         #
         # cutting out inner rectangle area
@@ -79,6 +99,7 @@ create_gravityGrid = function(
     }
 
     # generate gravity component grid
+    message("calculating gravity components per grid cell")
     gcomp_grid = fill_gcompgrid(
             g_grid = grid3d,
             senloc = SG_coordinates,
@@ -86,14 +107,15 @@ create_gravityGrid = function(
             edge = "regular"
     )
     # plot to check
-    ggplot(data = melt(gcomp_grid, id = c("x", "y", "z")), aes(x=x, y=y)) + 
-      geom_raster(aes(fill = value))
+    # ggplot(data = melt(gcomp_grid, id = c("x", "y", "z")), aes(x=x, y=y)) + 
+    #   geom_raster(aes(fill = value))
 
     # # take out column "layer", which was needed only for internal calculations
     # gcomp_grid = dplyr::select(gcomp_grid, -layer)
 
     # round all x,y,z to same decimal places
     # if not, joining might not be complete!
+    message("rounding data to necessary precision")
     round_x = decimalplaces(grid_discretization$x)
     round_y = decimalplaces(grid_discretization$y)
     round_z = decimalplaces(grid_discretization$z)
