@@ -20,15 +20,23 @@ aggTS = function(
     timeseries_data,
     newPeriod,
     fun = "sum",
-    time_offset = 0
+    time_offset = 0,
+    conserve_columns = NA
 ){
     ## DEBUGGING
     # timeseries_data = as.data.frame(ET_hourly)
+    # timeseries_data = as.data.frame(data_radar_mod)
     # newPeriod = "daily"
     # fun = "sum"
     # time_offset = 0
+    # conserve_columns = "cell_index"
     ##
-
+    ## force input to be a data.frame
+    timeseries_data = as.data.frame(timeseries_data)
+    # construct list of columns to conserve during summarizing
+    if(!is.na(conserve_columns)){
+    columns = as.list(c("datetime", conserve_columns))
+    }
     # format after new period
     # and include offset
     switch(newPeriod,
@@ -60,13 +68,17 @@ aggTS = function(
     switch(fun,
            sum = {
         ts_newPeriod = ts_newPeriod %>%
-        dplyr::group_by(datetime) %>%
-        dplyr::summarize(observed = sum(value, na.rm = T))
+        # dplyr::group_by(datetime) %>%
+        dplyr::group_by_(.dots = columns) %>%
+        # dplyr::summarize(observed = sum(value, na.rm = T))
+        dplyr::summarize(value = sum(value, na.rm = T))
            },
            mean = {
         ts_newPeriod = ts_newPeriod %>%
-        dplyr::group_by(datetime) %>%
-        dplyr::summarize(observed = mean(value, na.rm = T))
+        # dplyr::group_by(datetime) %>%
+        dplyr::group_by_(.dots = columns) %>%
+        # dplyr::summarize(observed = mean(value, na.rm = T))
+        dplyr::summarize(value = mean(value, na.rm = T))
            }
            )
     #
