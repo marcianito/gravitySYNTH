@@ -19,6 +19,7 @@ pick_ts = function(
     timePeriod_end,
     includeET = FALSE,
     gravityUnits = TRUE,
+    cummulative = TRUE,
     facTopo,
     ...
 ){
@@ -47,6 +48,8 @@ pick_ts = function(
     # limit time period to decided period
     atmosphere_hourly = atmosphere_hourly %>%
         dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end)
+    # subtract first value to set cummulative sums equal to zero at beginning of dataset
+    atmosphere_hourly$atmo = atmosphere_hourly$atmo - atmosphere_hourly$atmo[1]
     ####################
     # global hydrology
     globHyd_hourly = read_data(
@@ -58,6 +61,8 @@ pick_ts = function(
     # limit time period to decided period
     globHyd_hourly = globHyd_hourly %>%
         dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end)
+    # subtract first value to set cummulative sums equal to zero at beginning of dataset
+    globHyd_hourly$globHyd = globHyd_hourly$globHyd - globHyd_hourly$globHyd[1]
     ####################
     # non tidal ocean loading
     ntol_hourly = read_data(
@@ -69,6 +74,8 @@ pick_ts = function(
     # limit time period to decided period
     ntol_hourly = ntol_hourly %>%
         dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end)
+    # subtract first value to set cummulative sums equal to zero at beginning of dataset
+    ntol_hourly$ntol = ntol_hourly$ntol - ntol_hourly$ntol[1]
     ####################
     # tides
     tides_hourly = read_data(
@@ -80,6 +87,8 @@ pick_ts = function(
     # limit time period to decided period
     tides_hourly = tides_hourly %>%
         dplyr::filter(datetime >= timePeriod_start & datetime < timePeriod_end)
+    # subtract first value to set cummulative sums equal to zero at beginning of dataset
+    tides_hourly$tides = tides_hourly$tides - tides_hourly$tides[1]
     ####################
      
     ####################
@@ -118,6 +127,13 @@ pick_ts = function(
             # dplyr::mutate(value = atmo + discharge + globHyd + ntol + precip + tides) %>%
             dplyr::mutate(value = atmo + globHyd + ntol + tides) %>%
             dplyr::select(datetime, value)
+    }
+    ## cummulative or single time point values
+    if(!cummulative){
+      # in this case: construct time series of differences between time steps
+      gravity_ts$value =  c(dplyr::lead(gravity_ts$value, 1) - gravity_ts$value)
+      # remove last entry, which is NA due to lagged differences
+      gravity_ts = gravity_ts[-length(gravity_ts$value),]
     }
     ## select units of time series
     # if desired, [nm/s²] are converted in [mm], using the topography factor
