@@ -25,22 +25,32 @@ create_gravityGrid = function(
 ){
     ## DEBUGGING
     # DEM_input_file = DEM_file
-    # DEM_input_file = DEM_in
+    # # DEM_input_file = DEM_in
     # dir_input_DEM = dir_DEM
-    # # SG_coordinates = SGloc
+    # # # SG_coordinates = SGloc
     # SG_coordinates = SG_locs
-    # # grid_discretization = grid3d_discrezitation
-    # grid_discretization = grid3d_discretization[1,]
+    # grid_discretization = grid3d_discrezitation
+    # # grid_discretization = grid3d_discretization[1,]
     # grid_depth = grid3d_vertDepth
-    # # radius_inner = rad_inner
-    # # radius_outer = rad_outer
-    # radius_inner = 0
-    # radius_outer = 100
+    # # # radius_inner = rad_inner
+    # # # radius_outer = rad_outer
+    # # radius_inner = 0
+    # # radius_outer = 100
+    # range_coords_x = grid_domain_x
+    # range_coords_y = grid_domain_y
     ##
     if(is.na(radius_inner)){
         # rectangle
+        # decide between relative or absolute coordinates
+        if(length(range_coords_x) == 1){
+        # subtracting / adding  half of complete extent
         grid_x = c(SG_coordinates$x - (range_coords_x / 2), SG_coordinates$x + (range_coords_x / 2)) # min, max
         grid_y = c(SG_coordinates$y - (range_coords_y / 2), SG_coordinates$y + (range_coords_y / 2)) # min, max
+        }else{
+        # setting absolute grid domain borders
+        grid_x = c(min(range_coords_x), max(range_coords_x)) # min, max
+        grid_y = c(min(range_coords_y), max(range_coords_y)) # min, max
+        }
     }else{
         # cirle
         # in fact, here it is still a rectangle
