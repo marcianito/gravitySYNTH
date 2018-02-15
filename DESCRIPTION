@@ -1,9 +1,23 @@
 Package: gravitySynth
-Title: What the Package Does (one line, title case)
-Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Title: Errors due to global gravity correction methods
+Version: 0.9
+Authors@R: person("Marvin", "Reich", email = "mreich@posteo.de", role = c("aut", "cre"))
+Description: Provide a synthetical anaylsis of errors and uncertainties of
+             gravity correction components (tides, atmosphere, global hydrology and non-tidal ocean loading).
 Depends: R (>= 3.2.1)
-License: What license is it under?
+Imports: dplyr,
+         raster,
+         zoo,
+         reshape2,
+         ggplot2,
+         viridis,
+         gstat,
+         hydroGOF,
+         ncdf4,
+         tidyr,
+         ptinpoly,
+         devtools
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.0.1
