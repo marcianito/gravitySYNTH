@@ -39,7 +39,7 @@ pick_ts = function(
     ## load time series
     ####################
     # atmosphere
-    atmosphere_hourly = read_data(
+    atmosphere_hourly = UmbrellaEffect::read_data(
         data_in = paste0(site_name, "_atmosphere_hourly.tsf"),
         data_dir = paste0(input_dir, "Atmosphere/"),
         dat_tsf = (variation$atmo + 6))
@@ -52,7 +52,7 @@ pick_ts = function(
     atmosphere_hourly$atmo = atmosphere_hourly$atmo - atmosphere_hourly$atmo[1]
     ####################
     # global hydrology
-    globHyd_hourly = read_data(
+    globHyd_hourly = UmbrellaEffect::read_data(
         data_in = paste0(site_name, "_globalHydrology_hourly.tsf"),
         data_dir = paste0(input_dir, "GlobalHydrology/"),
         dat_tsf = (variation$globHyd + 6))
@@ -65,7 +65,7 @@ pick_ts = function(
     globHyd_hourly$globHyd = globHyd_hourly$globHyd - globHyd_hourly$globHyd[1]
     ####################
     # non tidal ocean loading
-    ntol_hourly = read_data(
+    ntol_hourly = UmbrellaEffect::read_data(
         data_in = paste0(site_name, "_nonTidalOceanLoading_hourly.tsf"),
         data_dir = paste0(input_dir, "NonTidalOceanLoading/"),
         dat_tsf = (variation$ntol + 6))
@@ -78,7 +78,7 @@ pick_ts = function(
     ntol_hourly$ntol = ntol_hourly$ntol - ntol_hourly$ntol[1]
     ####################
     # tides
-    tides_hourly = read_data(
+    tides_hourly = UmbrellaEffect::read_data(
         data_in = paste0(site_name, "_tides_hourly.tsf"),
         data_dir = paste0(input_dir, "Tides/"),
         dat_tsf = (variation$tides + 6))
