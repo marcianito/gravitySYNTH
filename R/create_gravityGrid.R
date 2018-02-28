@@ -38,6 +38,16 @@ create_gravityGrid = function(
     # # radius_outer = 100
     # range_coords_x = grid_domain_x
     # range_coords_y = grid_domain_y
+    ## testing UmbrellaEffect package:
+            # DEM_input_file = DEM_input_file
+            # dir_input_DEM = ""
+            # SG_coordinates = SGloc
+            # grid_discretization = grid3d_discr
+            # grid_depth = grid3d_depth
+            # range_coords_x = Building_x
+            # range_coords_y = Building_y
+            # radius_inner = NA
+            # radius_outer = NA
     ##
     if(is.na(radius_inner)){
         # rectangle
@@ -88,6 +98,7 @@ create_gravityGrid = function(
                 grid_domain_y = grid_y,
                 grid_discr = grid_discretization,
                 depth_split = grid_depth,
+                loc_z = SG_coordinates$z,
                 input_dir = dir_input_DEM,
                 output_dir = dir_input_DEM
     )
