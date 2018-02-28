@@ -27,7 +27,7 @@ pick_ts = function(
     ## debugging
     # input_dir = dir_input
     # site_name = site
-    # variation = site_component_combinations[1,]
+    # variation = site_component_combinations[combination,]
     # facTopo = TopoFactor
     # timePeriod_start = ts_start
     # timePeriod_end = ts_end
