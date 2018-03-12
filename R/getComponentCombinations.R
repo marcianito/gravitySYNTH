@@ -25,7 +25,7 @@ getComponentCombinations = function(
     ## atmosphere
     # determine number of rows to skip
     # this is defined by hitting "[DATA]" in the .tsf file
-    data_in = paste0(site_name, "_atmosphere_hourly.tsf")
+    data_in = paste0(site_name, "_ATMO_all_models.tsf")
     data_dir = paste0(input_dir, "Atmosphere/")
     data_lines = readLines(con = paste0(data_dir, data_in), n = 100)
     line_start = which(data_lines %in% "[DATA]")
@@ -43,7 +43,7 @@ getComponentCombinations = function(
     ## global hydrology
     # determine number of rows to skip
     # this is defined by hitting "[DATA]" in the .tsf file
-    data_in = paste0(site_name, "_globalHydrology_hourly.tsf")
+    data_in = paste0(site_name, "_GHE_all_models.tsf")
     data_dir = paste0(input_dir, "GlobalHydrology/")
     data_lines = readLines(con = paste0(data_dir, data_in), n = 100)
     line_start = which(data_lines %in% "[DATA]")
@@ -61,7 +61,7 @@ getComponentCombinations = function(
     ## non tidal ocean loading
     # determine number of rows to skip
     # this is defined by hitting "[DATA]" in the .tsf file
-    data_in = paste0(site_name, "_nonTidalOceanLoading_hourly.tsf")
+    data_in = paste0(site_name, "_NTOL_all_models.tsf")
     data_dir = paste0(input_dir, "NonTidalOceanLoading/")
     data_lines = readLines(con = paste0(data_dir, data_in), n = 100)
     line_start = which(data_lines %in% "[DATA]")
@@ -79,8 +79,9 @@ getComponentCombinations = function(
     ## tides
     # determine number of rows to skip
     # this is defined by hitting "[DATA]" in the .tsf file
-    data_in = paste0(site_name, "_tides_hourly.tsf")
-    data_dir = paste0(input_dir, "Tides/")
+    data_in = paste0(site_name, "_TIDE_all_models.tsf")
+    # data_dir = paste0(input_dir, "Tides/")
+    data_dir = paste0(input_dir, "Grav/tides/series/")
     data_lines = readLines(con = paste0(data_dir, data_in), n = 100)
     line_start = which(data_lines %in% "[DATA]")
     # read in .tsf file

@@ -40,7 +40,7 @@ pick_ts = function(
     ####################
     # atmosphere
     atmosphere_hourly = read_data(
-        data_in = paste0(site_name, "_atmosphere_hourly.tsf"),
+        data_in = paste0(site_name, "_ATMO_all_models.tsf"),
         data_dir = paste0(input_dir, "Atmosphere/"),
         dat_tsf = (variation$atmo + 6))
     # change column name
@@ -53,7 +53,7 @@ pick_ts = function(
     ####################
     # global hydrology
     globHyd_hourly = read_data(
-        data_in = paste0(site_name, "_globalHydrology_hourly.tsf"),
+        data_in = paste0(site_name, "_GHE_all_models.tsf"),
         data_dir = paste0(input_dir, "GlobalHydrology/"),
         dat_tsf = (variation$globHyd + 6))
     # change column name
@@ -66,7 +66,7 @@ pick_ts = function(
     ####################
     # non tidal ocean loading
     ntol_hourly = read_data(
-        data_in = paste0(site_name, "_nonTidalOceanLoading_hourly.tsf"),
+        data_in = paste0(site_name, "_NTOL_all_models.tsf"),
         data_dir = paste0(input_dir, "NonTidalOceanLoading/"),
         dat_tsf = (variation$ntol + 6))
     # change column name
@@ -79,8 +79,8 @@ pick_ts = function(
     ####################
     # tides
     tides_hourly = read_data(
-        data_in = paste0(site_name, "_tides_hourly.tsf"),
-        data_dir = paste0(input_dir, "Tides/"),
+        data_in = paste0(site_name, "_TIDE_all_models.tsf"),
+        data_dir = paste0(input_dir, "Grav/tides/series/"),
         dat_tsf = (variation$tides + 6))
     # change column name
     colnames(tides_hourly)[2] = "tides"
