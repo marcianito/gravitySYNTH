@@ -15,7 +15,8 @@
 getComponentCombinations = function(
     site_name,
     input_dir,
-    component_name = NA
+    component_name = NA,
+    output_singleCombinations 
 ){
     ## DEBUGGING
     # site_name = "test"
@@ -95,27 +96,36 @@ getComponentCombinations = function(
     names_tides = data.frame(tides = round(seq(1:components_tides),0),
                             Tides = component_names)
     # 
-    ## construct data.frame with all possible combinations
-    site_component_combinations = expand.grid(
-    atmo = round(seq(1, components_atmo), 0),
-    # discharge = 1,
-    globHyd = round(seq(1, components_globHyd), 0),
-    ntol = round(seq(1, components_ntol), 0),
-    # precipitation = 1,
-    tides = round(seq(1, components_tides), 0)
-    )
-    #
-    # decide what to return
-    if(!is.na(component_name)){
-    switch(component_name,
-           atmo = {return_data = names_atmo},
-           tides = {return_data = names_tides},
-           ntol = {return_data = names_ntol},
-           globHyd = {return_data = names_globHyd}
-           )
-    }else{
+    if(!output_singleCombinations){
+      ## construct data.frame with all possible combinations
+      site_component_combinations = expand.grid(
+      atmo = round(seq(1, components_atmo), 0),
+      # discharge = 1,
+      globHyd = round(seq(1, components_globHyd), 0),
+      ntol = round(seq(1, components_ntol), 0),
+      # precipitation = 1,
+      tides = round(seq(1, components_tides), 0)
+      )
+      # decide what to return
+      if(!is.na(component_name)){
+        switch(component_name,
+             atmo = {return_data = names_atmo},
+             tides = {return_data = names_tides},
+             ntol = {return_data = names_ntol},
+             globHyd = {return_data = names_globHyd}
+             )
+      }else{
         return_data = site_component_combinations
+      }
+    }else{
+      switch(component_name,
+           atmo = {return_data = data.frame(atmo = round(seq(1, components_atmo), 0))},
+           tides = {return_data = data.frame(globHyd = round(seq(1, components_globHyd), 0))},
+           ntol = {return_data = data.frame(ntol = round(seq(1, components_ntol), 0))},
+           globHyd = {return_data = data.frame(tides = round(seq(1, components_tides), 0))}
+           )
     }
+    #
     ## return dataset
     return(return_data)
 }

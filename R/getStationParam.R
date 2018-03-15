@@ -22,7 +22,7 @@ getStationParam = function(
     # }
     # load .csv file
     config_file = read.table(file=paste0(input_dir, "config_file.csv"),
-        sep = ";", dec = ",", header = T, stringsAsFactors = F, nrows = 7)
+        sep = ";", dec = ",", header = T, stringsAsFactors = F, nrows = 8)
     # choose parameters
     if(Site == "all"){
     parameter = config_file %>%
